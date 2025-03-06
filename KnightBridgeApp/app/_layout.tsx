@@ -32,8 +32,8 @@ export default function RootLayout() {
         <Stack.Screen name="index" options={{ headerShown: false }} />
         
         {/* Login & Signup Screens */}
-        <Stack.Screen name="login" options={{ title: 'Login' }} />
-        <Stack.Screen name="signup" options={{ title: 'Sign Up' }} />
+        <Stack.Screen name="login" options={{ headerShown: false }} />
+        <Stack.Screen name="signup" options={{ headerShown: false }} />
 
         {/* Main App (Tabs) */}
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
