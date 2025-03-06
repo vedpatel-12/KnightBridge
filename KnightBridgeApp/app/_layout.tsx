@@ -37,6 +37,8 @@ export default function RootLayout() {
 
         {/* Main App (Tabs) */}
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+
+        <Stack.Screen name="loading" options={{ headerShown: false }} />
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>

@@ -35,10 +35,10 @@ export default function SettingsScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff', padding: 20 },
-  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
-  title: { fontSize: 24, fontWeight: 'bold', fontStyle: 'italic' },
+  header: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginBottom: 20, paddingTop:45 },
+  title: { paddingTop: 0,flex: 1, textAlign: 'center', fontSize: 35, fontWeight: 'bold', fontStyle: 'italic',marginBottom: 20 },
   profileImage: { width: 40, height: 40, borderRadius: 20 },
-  settingOption: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 },
+  settingOption: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 40 },
   settingTitle: { fontSize: 16, fontWeight: 'bold' },
   input: { flex: 1, marginLeft: 10, borderBottomWidth: 1, borderColor: '#ccc', paddingVertical: 5 },
   checkmark: { fontSize: 18, color: 'green', fontWeight: 'bold' },

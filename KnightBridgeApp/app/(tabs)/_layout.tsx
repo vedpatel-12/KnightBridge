@@ -32,7 +32,7 @@ export default function TabLayout() {
         name="homepage"
         options={{
           title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color="white" />,
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color="black" />,
         }}
       />
       
@@ -40,7 +40,7 @@ export default function TabLayout() {
         name="inbox"
         options={{
           title: 'Inbox',
-          tabBarIcon: ({ color }) => <Octicons name="inbox" size={24} color="white" />,
+          tabBarIcon: ({ color }) => <Octicons name="inbox" size={24} color="black" />,
         }}
       />
 
@@ -48,7 +48,7 @@ export default function TabLayout() {
         name="settings"
         options={{
           title: 'Settings',
-          tabBarIcon: ({ color }) => <SimpleLineIcons name="settings" size={24} color="white" />,
+          tabBarIcon: ({ color }) => <SimpleLineIcons name="settings" size={24} color="black" />,
         }}
       />
       

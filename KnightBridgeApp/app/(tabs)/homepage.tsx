@@ -41,7 +41,7 @@ export default function HomePage() {
 
       {/* Auto-Join Groups Section */}
       <Text style={styles.sectionHeader}>Auto-Join Groups</Text>
-      {Array(3).fill(null).map((_, index) => (
+      {Array(4).fill(null).map((_, index) => (
         <TouchableOpacity key={index} style={styles.groupButton} onPress={() => router.push('/loading')}>
           <Text style={styles.groupText}>2 spots: Basketball</Text>
         </TouchableOpacity>
@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    paddingTop: 50,
+    paddingTop: 80,
     backgroundColor: '#f9f9f9',
   },
   headerContainer: {
@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   header: {
-    fontSize: 24,
+    fontSize: 29,
   },
   italicBold: {
     fontWeight: 'bold',
@@ -78,8 +78,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#ddd',
   },
   subHeader: {
-    fontSize: 14,
+    fontSize: 15,
     color: 'gray',
+    paddingTop: 40,
     marginBottom: 15,
   },
   pickerContainer: {
@@ -96,13 +97,14 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   connectButton: {
-    width: 100,
-    height: 100,
+    width: 140,
+    height: 140,
     borderRadius: 50,
     overflow: 'hidden',
+    paddingTop: 20,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 20,
+    marginBottom: 40,
   },
   connectButtonGradient: {
     width: '100%',

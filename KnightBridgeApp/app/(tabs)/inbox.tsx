@@ -7,7 +7,7 @@ const profileImage = require('../../assets/images/profile.png'); // Adjust path 
 export default function InboxScreen() {
   const router = useRouter();
   
-  const messages = Array(5).fill({
+  const messages = Array(15).fill({
     name: "Person’s Name",
     message: "Liked a message - 3d",
   });
@@ -16,11 +16,6 @@ export default function InboxScreen() {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        {/* Profile Logo (Left Side) */}
-        <TouchableOpacity style={styles.profileIcon}>
-          <Image source={profileImage} style={styles.profileImage} />
-        </TouchableOpacity>
-
         {/* Centered Inbox Title */}
         <Text style={styles.title}>Inbox</Text>
       </View>
@@ -46,9 +41,9 @@ export default function InboxScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff', padding: 20 },
-  header: { flexDirection: 'row', alignItems: 'center', marginBottom: 20 },
-  title: { flex: 1, textAlign: 'center', fontSize: 24, fontWeight: 'bold', fontStyle: 'italic' },
-  profileIcon: { marginRight: 10 }, // Ensures spacing
+  header: { flexDirection: 'row', alignItems: 'center', marginBottom: 40 },
+  title: { paddingTop: 40,flex: 1, textAlign: 'center', fontSize: 35, fontWeight: 'bold', fontStyle: 'italic',marginBottom: -10 },
+  profileIcon: { paddingTop: 40,marginRight: 10 }, // Ensures spacing
   profileImage: { width: 40, height: 40, borderRadius: 20 }, // Circular profile image
   messageContainer: { flexDirection: 'row', alignItems: 'center', marginBottom: 15 },
   avatar: { width: 50, height: 50, borderRadius: 25, marginRight: 10 }, // Profile avatars in messages
