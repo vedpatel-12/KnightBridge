@@ -38,6 +38,13 @@ export default function RootLayout() {
         {/* Main App (Tabs) */}
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
 
+        {/* Activity Screens */}
+        <Stack.Screen name="activities/studying" options={{ headerShown: false }} />
+        <Stack.Screen name="activities/sports" options={{ headerShown: false }} />
+        <Stack.Screen name="activities/eating" options={{ headerShown: false }} />
+        <Stack.Screen name="activities/studying-details" options={{ headerShown: false }} />
+        <Stack.Screen name="activities/sports-details" options={{ headerShown: false }} />
+        <Stack.Screen name="activities/eating-details" options={{ headerShown: false }} />
         <Stack.Screen name="loading" options={{ headerShown: false }} />
       </Stack>
       <StatusBar style="auto" />

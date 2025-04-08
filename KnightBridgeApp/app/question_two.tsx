@@ -3,10 +3,11 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import DropdownPicker from 'react-native-dropdown-picker';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 
-export default function HomePage() {
+export default function QuestionTwoScreen() {
   const router = useRouter();
-  const [selectedActivity, setSelectedActivity] = useState('');
+  const [selectedActivity, setSelectedActivity] = useState('studying');
   const [open, setOpen] = useState(false);
   const [activities, setActivities] = useState([
     { label: 'Studying', value: 'studying' },
@@ -14,46 +15,23 @@ export default function HomePage() {
     { label: 'Eating', value: 'eating' },
   ]);
 
-  const handleConnect = () => {
-    switch(selectedActivity) {
-      case 'studying':
-        router.push('/activities/studying');
-        break;
-      case 'sports':
-        router.push('/activities/sports');
-        break;
-      case 'eating':
-        router.push('/activities/eating');
-        break;
-      default:
-        // If no activity is selected, show an alert
-        alert('Please select an activity first');
-    }
-  };
-
   return (
     <View style={styles.container}>
-      {/* Header with profile icon */}
-      <View style={styles.headerContainer}>
-        <Text style={styles.header}>
-          <Text style={styles.italicBold}>Hello, user!</Text>
-        </Text>
-      </View>
+      {/* Back Button */}
+      <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+        <Ionicons name="arrow-back" size={24} color="black" />
+      </TouchableOpacity>
 
-      <Text style={styles.subHeader}>Pick An Activity</Text>
+      <Text style={styles.header}>Question 2</Text>
 
-      {/* Activity Picker */}
+      {/* Activity Dropdown */}
       <View style={styles.pickerContainer}>
         <DropdownPicker
           open={open}
           setOpen={setOpen}
           value={selectedActivity}
           setValue={setSelectedActivity}
-          items={[
-            { label: 'Studying', value: 'studying' },
-            { label: 'Sports', value: 'sports' },
-            { label: 'Eating', value: 'eating' }
-          ]}
+          items={activities}
           setItems={setActivities}
           containerStyle={styles.dropdownContainer}
           style={styles.dropdown}
@@ -68,19 +46,11 @@ export default function HomePage() {
       </View>
 
       {/* Circular Connect Button */}
-      <TouchableOpacity style={styles.connectButton} onPress={handleConnect}>
+      <TouchableOpacity style={styles.connectButton} onPress={() => router.push('/loading')}>
         <LinearGradient colors={['#4A90E2', '#005BB5']} style={styles.connectButtonGradient}>
           <Text style={styles.connectText}>Connect</Text>
         </LinearGradient>
       </TouchableOpacity>
-
-      {/* Auto-Join Groups Section */}
-      <Text style={styles.sectionHeader}>Auto-Join Groups</Text>
-      {Array(4).fill(null).map((_, index) => (
-        <TouchableOpacity key={index} style={styles.groupButton} onPress={() => router.push('/loading')}>
-          <Text style={styles.groupText}>2 spots: Basketball</Text>
-        </TouchableOpacity>
-      ))}
     </View>
   );
 }
@@ -92,24 +62,17 @@ const styles = StyleSheet.create({
     paddingTop: 80,
     backgroundColor: '#f9f9f9',
   },
-  headerContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '85%',
-    alignItems: 'center',
+  backButton: {
+    position: 'absolute',
+    top: 60,
+    left: 20,
+    padding: 10,
   },
   header: {
     fontSize: 29,
-  },
-  italicBold: {
     fontWeight: 'bold',
-    fontStyle: 'italic',
-  },
-  subHeader: {
-    fontSize: 15,
-    color: 'gray',
-    paddingTop: 40,
-    marginBottom: 15,
+    marginBottom: 40,
+    marginTop: 20,
   },
   pickerContainer: {
     width: '85%',
@@ -141,6 +104,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 40,
+    marginTop: 20,
   },
   connectButtonGradient: {
     width: '100%',
@@ -154,22 +118,4 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
   },
-  sectionHeader: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  groupButton: {
-    width: '85%',
-    paddingVertical: 15,
-    backgroundColor: '#f0f0f0',
-    borderRadius: 10,
-    alignItems: 'center',
-    marginBottom: 10,
-    borderWidth: 2,
-    borderColor: '#005BB5',
-  },
-  groupText: {
-    fontSize: 16,
-  },
-});
+}); 
