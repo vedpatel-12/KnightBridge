@@ -1,110 +1,138 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
-import { useRouter } from 'expo-router';
-import { LinearGradient } from 'expo-linear-gradient';
-import { db } from '../firebaseConfig'; // ensure this includes the updated db import
 import { getAuth } from 'firebase/auth';
-import { ref, set, get, remove } from 'firebase/database';
+import { db } from '../../firebaseConfig';
+import { ref, set, get, remove, push } from 'firebase/database';
+import { LinearGradient } from 'expo-linear-gradient';
+
 
 export default function HomePage() {
-  const router = useRouter();
-  const [selectedActivity, setSelectedActivity] = useState(null);
-  const [selectedSport, setSelectedSport] = useState(null);
-  const [activityOpen, setActivityOpen] = useState(false);
-  const [sportOpen, setSportOpen] = useState(false);
+  const [selectedActivity, setSelectedActivity] = useState<string | null>(null);
+  const [activityOpen, setActivityOpen]       = useState(false);
+
+  const [selectedSport, setSelectedSport]     = useState<string | null>(null);
+  const [sportOpen, setSportOpen]             = useState(false);
+
+  // Clear sport whenever you switch away
+  useEffect(() => {
+    if (selectedActivity !== 'sports') {
+      setSelectedSport(null);
+    }
+  }, [selectedActivity]);
 
   const activityItems = [
     { label: 'Studying', value: 'studying' },
-    { label: 'Sports', value: 'sports' },
-    { label: 'Eating', value: 'eating' },
+    { label: 'Sports',   value: 'sports'   },
+    { label: 'Eating',   value: 'eating'   },
   ];
-
   const sportItems = [
     { label: 'Basketball', value: 'basketball' },
-    { label: 'Soccer', value: 'soccer' },
-    { label: 'Tennis', value: 'tennis' },
+    { label: 'Soccer',     value: 'soccer'     },
+    { label: 'Tennis',     value: 'tennis'     },
   ];
 
   const handleConnect = async () => {
     const auth = getAuth();
     const user = auth.currentUser;
-
     if (!user) {
-      Alert.alert('Not signed in', 'Please sign in first.');
-      return;
+      return Alert.alert('Not signed in', 'Please sign in first.');
     }
-
     if (!selectedActivity) {
-      Alert.alert('Missing Activity', 'Please select an activity.');
-      return;
+      return Alert.alert('Missing Activity', 'Please select an activity.');
+    }
+    if (selectedActivity === 'sports' && !selectedSport) {
+      return Alert.alert('Missing Sport', 'Please select a sport.');
     }
 
-    const uid = user.uid;
+    const uid       = user.uid;
+    const timestamp = new Date().toISOString();
 
     try {
-      // Save activity to user profile
+      // 1) save user profile
       await set(ref(db, `users/${uid}`), {
         activity: selectedActivity,
-        sport: selectedSport || null,
-        email: user.email,
-        timestamp: new Date().toISOString(),
+        sport:    selectedSport || null,
+        email:    user.email,
+        timestamp,
       });
 
-      // If sports, add user to sport group
-      if (selectedActivity === 'sports' && selectedSport) {
-        const sportRef = ref(db, `sports/${selectedSport}/members`);
-        const snapshot = await get(sportRef);
-        const members = snapshot.val() || {};
+      // 2) if sports, enqueue & possibly match
+      if (selectedActivity === 'sports') {
+        const membersRef = ref(db, `sports/${selectedSport}/members`);
+        const snap       = await get(membersRef);
+        const members    = snap.val() || {};
+        const count      = Object.keys(members).length;
 
-        // Add user to the sport group
+        // add self
         await set(ref(db, `sports/${selectedSport}/members/${uid}`), {
-          email: user.email,
-          timestamp: new Date().toISOString(),
+          email:     user.email,
+          timestamp,
         });
 
-        // If there are 2 members, match them
-        if (Object.keys(members).length + 1 === 2) {
-          await matchUsers(selectedSport);
+        // if that makes two, match right away
+        if (count + 1 === 2) {
+          await matchUsers(selectedSport!);
+          return Alert.alert(
+            'Matched!',
+            `🎉 We've found someone for ${selectedSport}! Check your Inbox.`
+          );
         }
       }
 
-      // Navigate to activity screen
-      router.push(`/activities/${selectedActivity}`);
-    } catch (error) {
-      console.error(error);
+      // 3) otherwise, just confirm they're in the queue
+      Alert.alert(
+        'You’re In!',
+        `👍 You’ll be notified as soon as we find another ${selectedActivity}${selectedActivity === 'sports' ? ` (${selectedSport})` : ''} partner.`
+      );
+    } catch (err) {
+      console.error(err);
       Alert.alert('Error', 'Something went wrong saving your activity.');
     }
   };
 
   const matchUsers = async (sport: string) => {
     const sportRef = ref(db, `sports/${sport}/members`);
-    const snapshot = await get(sportRef);
-    const members = snapshot.val();
+    const snap     = await get(sportRef);
+    const members  = snap.val() || {};
+    const uids     = Object.keys(members);
 
-    if (members) {
-      const memberKeys = Object.keys(members);
-      if (memberKeys.length >= 2) {
-        const user1 = members[memberKeys[0]];
-        const user2 = members[memberKeys[1]];
+    if (uids.length >= 2) {
+      const [uid1, uid2] = uids;
+      const user1        = members[uid1];
+      const user2        = members[uid2];
+      const ts           = new Date().toISOString();
 
-        // Send SMS to both users (implement your own function to send SMS)
-       // await sendMatchSMS(user1.email, user2.email, sport);
+      // push notifications
+      const n1 = push(ref(db, `notifications/${uid1}`));
+      await set(n1, {
+        type:    'match',
+        message: `You’ve been matched with ${user2.email} for ${sport}!`,
+        timestamp: ts,
+      });
+      const n2 = push(ref(db, `notifications/${uid2}`));
+      await set(n2, {
+        type:    'match',
+        message: `You’ve been matched with ${user1.email} for ${sport}!`,
+        timestamp: ts,
+      });
 
-        // Remove both users from the database
-        await remove(ref(db, `sports/${sport}/members/${memberKeys[0]}`));
-        await remove(ref(db, `sports/${sport}/members/${memberKeys[1]}`));
+      // remove from queue
+      await Promise.all([
+        remove(ref(db, `sports/${sport}/members/${uid1}`)),
+        remove(ref(db, `sports/${sport}/members/${uid2}`)),
+      ]);
 
-        console.log(`Matched ${user1.email} and ${user2.email} for ${sport}`);
-      }
+      console.log(`Matched ${user1.email} ↔ ${user2.email} for ${sport}`);
     }
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Welcome!</Text>
-      <Text style={styles.subHeader}>Pick An Activity</Text>
+      <Text style={styles.subHeader}>Pick an activity</Text>
 
+      {/* Activity */}
       <View style={styles.pickerContainer}>
         <DropDownPicker
           open={activityOpen}
@@ -114,10 +142,11 @@ export default function HomePage() {
           setValue={setSelectedActivity}
           setItems={() => {}}
           placeholder="Select an activity"
-          zIndex={2000}
+          zIndex={3000}
         />
       </View>
 
+      {/* Sport only if needed */}
       {selectedActivity === 'sports' && (
         <View style={styles.pickerContainer}>
           <DropDownPicker
@@ -128,7 +157,7 @@ export default function HomePage() {
             setValue={setSelectedSport}
             setItems={() => {}}
             placeholder="Select a sport"
-            zIndex={1000}
+            zIndex={2000}
           />
         </View>
       )}
@@ -162,7 +191,6 @@ const styles = StyleSheet.create({
   pickerContainer: {
     width: '85%',
     marginBottom: 20,
-    zIndex: 10,
   },
   connectButton: {
     width: 140,
